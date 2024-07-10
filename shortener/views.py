@@ -4,13 +4,14 @@ from .models import URL, UserAccess
 import uuid
 import user_agents
 from datetime import datetime
+from rest_framework.views import APIView
 
 def index(request):
     return render(request, 'index.html')
 
-def create(request):
-    if request.method == 'POST':
-        link = request.POST['link']
+class CreateShortURL(APIView):
+    def post(self, request, *args, **kwargs):
+        link = request.data.get('link')
         if link.startswith('http://'):
             link = link[7:]
         elif link.startswith('https://'):
@@ -18,9 +19,9 @@ def create(request):
         uid = str(uuid.uuid4())[:5]
         new_url = URL(link=link, short_uuid=uid)
         new_url.save()
-        return JsonResponse({
-            "short_url": new_url.short_uuid,
-        })
+        short_url = f"{request.scheme}://{request.get_host()}/{new_url.short_uuid}"
+        return JsonResponse({"short_url": short_url})
+
 
 def go(request, pk):
     url_details = URL.objects.get(short_uuid=pk)
