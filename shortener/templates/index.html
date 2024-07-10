@@ -106,7 +106,9 @@
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             },
             success: function (data) {
-                $('h2').html(`<a href="/${data}">localhost:8000/${data}</a>`);
+                const fullUrl = "http://"+ window.location.host +'/'+ data.short_url;
+                console.log(fullUrl);
+                $('h2').html(`<a href="${fullUrl}">${fullUrl}</a>`);
             },
             error: function () {
                 $('h2').html('An error occurred. Please try again.');
